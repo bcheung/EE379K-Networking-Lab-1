@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
+import os.path
 import subprocess
+
+try:
+    os.mkdir("results")
+except Exception:
+    pass
 
 def main():
     # r - read file
-    with open('zmap_output.txt', 'r', newline=None) as file:
-        with open("failed_ip.txt", "a") as failed_ip:
-            with open("successful_ip.txt", "a") as successful_ip:
-                ip = file.readline()
+    with open('zmap_output.txt', 'r', newline=None) as ip_addresses_file:
+        with open("results/failed_ip.txt", "a") as failed_ip:
+            with open("results/successful_ip.txt", "a") as successful_ip:
+                ip = ip_addresses_file.readline()
 
                 num_ip = 0
                 num_successful = 0
@@ -24,9 +30,10 @@ def main():
                     else:
                         successful_ip.write("{}\n".format(ip))
                         num_successful += 1
-                    ip = file.readline()
+                    ip = ip_addresses_file.readline()
                     print()
-                print("Total: {}, Successful: {}, Failed: {}".format(num_ip, num_successful, num_failed))
+                results_file = open("results/scan_results.txt", "a")
+                results_file.write("Total: {}, Successful: {}, Failed: {}".format(num_ip, num_successful, num_failed))
 
 
 if __name__ == "__main__":
