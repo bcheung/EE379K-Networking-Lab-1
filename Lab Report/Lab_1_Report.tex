@@ -52,8 +52,7 @@ The DOS attack was performed using a program called \textbf{\emph{hping3}}.
 The attacker flooded the server with SYN packets while using a spoofed IP address to hide the source IP address.
 Without the correct IP, the server was unable to send SYN and ACK packets back to the attacker,
 which prevented the three-way handshake from being completed.
-By flooding the server with SYN packets and preventing the three-way handshake from being completed,
-the server cannot process other clients' requests because it is too busy trying to complete the attacker's requests,
+This prevents the server from processing other clients' requests because it is too busy trying to complete the attacker's requests,
 so clients that want to connect to the server are left waiting.
 
 \noindent The following command was used to perform the DOS attack:
