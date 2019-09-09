@@ -11,7 +11,7 @@ except Exception:
     pass
 
 ip_set = set()
-subnets_arr = []
+subnet_set = set()
 multiple_cidrs_arr = []
 network_arr = []
 network_ip_dict = {}
@@ -29,7 +29,6 @@ def main():
             if line == "-":
                 is_new_ip = True
             else:
-                print(line)
                 if is_new_ip:
                     curr_ip = line
                     is_new_ip = False
@@ -37,7 +36,6 @@ def main():
                     parse_network_info(line, curr_ip)
 
             line = ip_addresses_file.readline()
-            print()
         print_results()
 
 
@@ -57,6 +55,7 @@ def parse_network_info(network_info, curr_ip):
                 # network range could span multiple CIDRs
                 # CIDR: 45.216.0.0/14, 45.220.0.0/15
                 cidr_arr = val.split(", ")
+                print(val)
             elif cidr_cnt == 0:
                 if key == "inet":
                     # only use inet if no CIDR exists
@@ -79,36 +78,41 @@ def parse_network_info(network_info, curr_ip):
                     prefices_arr = prefix_str.split("+")
                     cidr_arr = [(start_range + prefix) for prefix in prefices_arr]
             process_cidr_arr(cidr_arr, curr_ip)
-            curr_subnet_arr.append(cidr_arr)
+            curr_subnet_arr.extend(cidr_arr)
         if len(curr_subnet_arr) > 1:
-            subnets_arr.append(curr_subnet_arr)
+            curr_subnet_arr.sort()
+            key = ", ".join(curr_subnet_arr)
+            subnet_set.add(key)
 
 
 
 def process_cidr_arr(cidr_arr, curr_ip):
-    if cidr_arr[0] in network_ip_dict:
+    cidr_arr.sort()
+    key = ", ".join(cidr_arr)
+    if key in network_ip_dict:
         # network exists, add ip to set
-        network_ip_dict[cidr_arr[0]].append(curr_ip)
+        network_ip_dict[key].append(curr_ip)
     else:
         # first occurrence of network
         # add entry for each CIDR in cidr_arr
         # CIDR: {set of ip addresses in network}
-        network_ips = [curr_ip]
-        network = {cidr : network_ips for cidr in cidr_arr}
+        network_ip_arr = [curr_ip]
+        network = {key : network_ip_arr}
         network_ip_dict.update(network)
         # add to network list
-        network_arr.append(cidr_arr)
+        network_arr.append(key)
         if len(cidr_arr) > 1:
-            multiple_cidrs_arr.append(cidr_arr)
+            multiple_cidrs_arr.append(key)
 
 
 def print_results():
     subnets_file = open("results/subnets.json", "a")
-    multiple_cidrs_file = open("results/multiple_cidrs.json", "a")  
+    multiple_cidrs_file = open("results/multiple_cidrs.json", "a")
     networks_file = open("results/networks.json", "a")
     network_ip_file = open("results/network_ip.json", "a")
 
-    subnets_file.write(json.dumps(subnets_arr, indent = 4))
+    subnet_arr = list(subnet_set)
+    subnets_file.write(json.dumps(subnet_arr, indent = 4))
 
     multiple_cidrs_file.write(json.dumps(multiple_cidrs_arr, indent = 4))
 
