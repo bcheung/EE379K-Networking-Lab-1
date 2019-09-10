@@ -5,15 +5,10 @@ import netaddr
 import json
 import os.path
 
-try:
-    os.mkdir("results")
-except Exception:
-    pass
-
 ip_set = set()
 subnet_set = set()
 multiple_cidrs_arr = []
-network_arr = []
+network_ip_cnt_dict = {}
 network_ip_dict = {}
 
 def main():
@@ -55,7 +50,6 @@ def parse_network_info(network_info, curr_ip):
                 # network range could span multiple CIDRs
                 # CIDR: 45.216.0.0/14, 45.220.0.0/15
                 cidr_arr = val.split(", ")
-                print(val)
             elif cidr_cnt == 0:
                 if key == "inet":
                     # only use inet if no CIDR exists
@@ -72,11 +66,11 @@ def parse_network_info(network_info, curr_ip):
                 elif key == "IPv4":
                     # IPv4: 211.226.0.0 - 211.231.255.255 (/14+/15)
                     ip_range = val.split(" - ")
-                    start_range = val[0]
-                    end_range = val[1]
+                    start_range = ip_range[0]
+                    end_range = ip_range[1]
                     prefix_str = end_range[end_range.find("(")+1:end_range.find(")")]
                     prefices_arr = prefix_str.split("+")
-                    cidr_arr = [(start_range + prefix) for prefix in prefices_arr]
+                    cidr_arr = [start_range + prefix for prefix in prefices_arr]
             process_cidr_arr(cidr_arr, curr_ip)
             curr_subnet_arr.extend(cidr_arr)
         if len(curr_subnet_arr) > 1:
@@ -92,6 +86,7 @@ def process_cidr_arr(cidr_arr, curr_ip):
     if key in network_ip_dict:
         # network exists, add ip to set
         network_ip_dict[key].append(curr_ip)
+        network_ip_cnt_dict.update({key: network_ip_cnt_dict[key] + 1})
     else:
         # first occurrence of network
         # add entry for each CIDR in cidr_arr
@@ -100,7 +95,7 @@ def process_cidr_arr(cidr_arr, curr_ip):
         network = {key : network_ip_arr}
         network_ip_dict.update(network)
         # add to network list
-        network_arr.append(key)
+        network_ip_cnt_dict.update({key: 1})
         if len(cidr_arr) > 1:
             multiple_cidrs_arr.append(key)
 
@@ -116,10 +111,14 @@ def print_results():
 
     multiple_cidrs_file.write(json.dumps(multiple_cidrs_arr, indent = 4))
 
-    networks_file.write(json.dumps(network_arr, indent = 4))
+    networks_file.write(json.dumps(network_ip_cnt_dict, indent = 4))
 
     network_ip_file.write(json.dumps(network_ip_dict, indent = 4))
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        os.mkdir("results")
+        main()
+    except Exception:
+        print("Must delete results directory to run script")
