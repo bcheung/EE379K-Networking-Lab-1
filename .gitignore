@@ -1,3 +1,5 @@
+*.pcap
+
 ### C ###
 *.o
 server

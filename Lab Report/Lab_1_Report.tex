@@ -26,9 +26,11 @@
 \begin{document}
 
 \maketitle
-\section{Part 1}
+\section{Part 1 - Server and Client Networking}
 \label{sec:part-1}
-part 1 paragraph
+The task was to implement an echo server and client in C given a Python implementation that modeled the desired behavior of the server and client.
+The Python implementation was also used to test the compatibility of the C program by interchanging the server and client with a Python server and C client and vice versa.
+The next task was to perform a Denial of Service (DOS) attack on the C server.
 \subsection{Step 1 - Echo Server}
 \subsubsection{Build server and client}
 In a terminal window, start at root directory of project and run the following commands:
@@ -55,7 +57,7 @@ which prevented the three-way handshake from being completed.
 This prevents the server from processing other clients' requests because it is too busy trying to complete the attacker's requests,
 so clients that want to connect to the server are left waiting.
 
-\noindent The following command was used to perform the DOS attack:
+The following command was used to perform the DOS attack:
 \begin{minted}{bash}
   $ sudo hping3 -S -w 64 -p 12000 --flood --rand-source 127.0.0.2
 \end{minted}
@@ -70,19 +72,24 @@ so clients that want to connect to the server are left waiting.
 \textbf{--rand-source}: generates a spoofed IP address to hide the source IP
 
 \textbf{127.0.0.2}: IP address of server
+\newline
 
-\section{Part 2}
-\label{sec:part-2}
-part 2 paragraph
-
-Example Figure \ref{fig:rocc-encoding} shows X. Example reference to paper~\cite{Brasser17}.
-
+The recorded pcap of the attack, shown in Figure \ref{fig:pcap-screenshot}, displays the flood of SYN packets sent to the server.
+Furthermore, the source IP of the attacker is randomly generated each time and there are no ACK packets, which prevents the handshake from being completed.
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=.9\linewidth]{./rocc-encoding.png}
-\caption{\label{fig:rocc-encoding}
-The RoCC Accelerator Instruction Encoding}
+\includegraphics[width=.9\linewidth]{./pcap-screenshot.png}
+\caption{\label{fig:pcap-screenshot}
+A screenshot of the pcap in Wireshark during a DOS attack.}
 \end{figure}
+
+\section{Part 2 - Scan the Internet}
+\label{sec:part-2}
+
+Total number of machines probed: 16063066
+Number of machines that responded: 11448
+Hitrate: 0.071\%
+
 \section{Part 3}
 
 \label{sec:part-3}
