@@ -13,6 +13,7 @@
 \usepackage{capt-of}
 \usepackage{hyperref}
 \usepackage{minted}
+\usepackage[section]{placeins}
 \author{Student: Brian Cheung bc32427 \\ Professor: Mohit Tiwari \\ TA: Antonio Espinoza \\ Department of Electrical \& Computer Engineering \\ The University of Texas at Austin}
 \date{\today}
 \title{EE379K Enterprise Network Security Lab 1 Report}
@@ -26,19 +27,19 @@
 \begin{document}
 
 \maketitle
-\section{Part 1 - Server and Client Networking}
+\section*{Part 1 - Server and Client Networking}
 \label{sec:part-1}
 The task was to implement an echo server and client in C given a Python implementation that modeled the desired behavior of the server and client.
 The Python implementation was also used to test the compatibility of the C program by interchanging the server and client with a Python server and C client and vice versa.
 The next task was to perform a Denial of Service (DOS) attack on the C server.
-\subsection{Step 1 - Echo Server}
-\subsubsection{Build server and client}
+\subsection*{Step 1 - Echo Server}
+\subsubsection*{Build server and client}
 In a terminal window, start at root directory of project and run the following commands:
 \begin{minted}{bash}
   $ cd Part\ 1
   $ make
 \end{minted}
-\subsubsection{Run server and client}
+\subsubsection*{Run server and client}
 Run the following commands to start the server:
 \begin{minted}{bash}
   $ cd Part\ 1
@@ -49,13 +50,14 @@ Open a new terminal window and run the following commands to start the client:
   $ cd Part\ 1
   $ ./client
 \end{minted}
-\subsection{Step 2 - DOS Attack}
+\subsection*{Step 2 - DOS Attack}
 The DOS attack was performed using a program called \textbf{\emph{hping3}}.
 The attacker flooded the server with SYN packets while using a spoofed IP address to hide the source IP address.
-Without the correct IP, the server was unable to send SYN and ACK packets back to the attacker,
+The server attempted to send the SYN and ACK packets back to the to the random spoofed IP address, but because they are spoofed,
+no real client actually responded to the server
 which prevented the three-way handshake from being completed.
-This prevents the server from processing other clients' requests because it is too busy trying to complete the attacker's requests,
-so clients that want to connect to the server are left waiting.
+Furthermore, this prevents the server from processing other clients' requests because it is too busy trying to complete the attacker's requests,
+so clients that want to connect to the server are left waiting to complete a three-way handshake until their requests time out.
 
 The following command was used to perform the DOS attack:
 \begin{minted}{bash}
@@ -74,44 +76,82 @@ The following command was used to perform the DOS attack:
 \textbf{127.0.0.2}: IP address of server
 \newline
 
-The recorded pcap of the attack, shown in Figure \ref{fig:pcap-screenshot}, displays the flood of SYN packets sent to the server.
-Furthermore, the source IP of the attacker is randomly generated each time and there are no ACK packets, which prevents the handshake from being completed.
-\begin{figure}[htbp]
+The recorded pcap of the attack displays the flood of SYN packets sent to the server (shown in Figure \ref{fig:client-attempt-flood})
+along with the server attempting send SYN and ACK packets back to the client.
+However, the server sends the packets to the spoofed IP of the attacker instead,
+which prevents the three-way handshake between the server and client from being completed.
+As a result, the client's request times out (shown in Figure \ref{fig:filtered-dos}).
+
+\begin{figure}[h]
 \centering
-\includegraphics[width=.9\linewidth]{./pcap-screenshot.png}
-\caption{\label{fig:pcap-screenshot}
-A screenshot of the pcap in Wireshark during a DOS attack.}
+\includegraphics[width=.9\linewidth]{./client-attempt-flood.png}
+\caption{\label{fig:client-attempt-flood}
+Client with IP address of 127.0.0.1 attempts to connect to the server during a DOS attack.}
 \end{figure}
 
-\section{Part 2 - Scan the Internet}
+\begin{figure}[h]
+\centering
+\includegraphics[width=.9\linewidth]{./filtered-dos.png}
+\caption{\label{fig:filtered-dos}
+The server sends SYN and ACK packets to the spoofed IP of the attacker and the client's request times out.}
+\end{figure}
+
+\section*{Part 2 - Scan the Internet}
 \label{sec:part-2}
+The objective of this part was to scan the internet with zmap and group IP addresses in the same network.
+\subsection*{ZMAP scan}
+The first step required a 2-4 hour zmap scan in order to obtain a list of IP addresses that responded when probed.
 
-Total number of machines probed: 16063066
-Number of machines that responded: 11448
-Hitrate: 0.071\%
+The following command was used to perform the zmap scan for three hours:
+\begin{minted}{bash}
+  $ sudo zmap \
+      --bandwidth=1M \
+      --target-port=80 \
+      --blacklist-file=blacklist.txt \
+      --output-file=zmap_scan.csv \
+      -t 10800
+\end{minted}
+ZMAP scan results:
 
-\section{Part 3}
+\textbf{Total number of machines probed}: 16063066
 
+\textbf{Number of machines that responded}: 11448
+
+\textbf{Hitrate}: 0.071\%
+\newline
+
+The next task was to group together all the IP addresses that belong in the same network.
+Each network has a range of IP addresses that are defined by the network's Classless Inter-Domain Routing (CIDR).
+The whois command was used to obtain the CIDR that each IP address belonged in, however,
+some whois outputs have different fields that define the CIDR (CIDR, inetnum, and IPv4 Address), which complicated the parsing process.
+With 11,448 IP addresses, this task was automated with a Python script (Part 2/scan/scan\_networks.py) that kept track of the IP addresses that successfully or unsuccessfully returned the desired network information.
+The Python script ran a Bash script (Part 2/scan/whois\_scan.sh) in a 'subprocess' in order to obtain the desired network information from each IP address.
+The output of these scripts is contained in the whois\_output.txt file (Part 2/scan/results/whois\_output.txt).
+
+After scanning and collecting all the required data, the next step was to group and count the IP addresses in each network.
+This task was also automated using a python script (Part 2/analyze/analyze\_networks.py). 
+The outputs of this script is contained in the directory: Part 2/analyze/results.
+
+\textbf{networks.json}: 16063066
+
+\textbf{network\_ip.json}: 11448
+
+\textbf{multiple\_cidrs.json}: 0.071\%
+
+\textbf{subnets.json}: 0.071\%
+
+\section*{Part 3}
 \label{sec:part-3}
 part 3 paragraph
 
-\begin{minted}{c++}
-  int main() {
-    printf("Hello World");
-    return 0;
-  }
-\end{minted}
-
-\section{Part 4}
-\label{sec:part-4}
-
-\section{Conclusion}
+\section*{Conclusion}
 \label{sec:conclusion}
 Please provide feedback so we can improve the labs for the course. How many
 hours did the lab take you? Was this lab boring? Did you learn anything? Is
 there anything you would change? Feel free to put anything here, but leaving it
 blank will result in the loss of points.
 
+\nocite{*}
 \bibliography{bibliography}
 \bibliographystyle{ieeetr}
 \end{document}
