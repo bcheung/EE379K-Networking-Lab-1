@@ -2,11 +2,6 @@
 import os.path
 import subprocess
 
-try:
-    os.mkdir("results")
-except Exception:
-    pass
-
 def main():
     # r - read file
     with open('zmap_scan_output.txt', 'r', newline=None) as ip_addresses_file:
@@ -37,4 +32,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        os.mkdir("results")
+        main()
+    except Exception:
+        print("Must delete results directory to run script")
