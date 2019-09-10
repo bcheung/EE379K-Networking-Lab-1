@@ -58,8 +58,9 @@ no real client actually responded to the server
 which prevented the three-way handshake from being completed.
 Furthermore, this prevents the server from processing other clients' requests because it is too busy trying to complete the attacker's requests,
 so clients that want to connect to the server are left waiting to complete a three-way handshake until their requests time out.
+\newline
 
-The following command was used to perform the DOS attack:
+\noindent The following command was used to perform the DOS attack:
 \begin{minted}{bash}
   $ sudo hping3 -S -w 64 -p 12000 --flood --rand-source 127.0.0.2
 \end{minted}
@@ -101,8 +102,9 @@ The server sends SYN and ACK packets to the spoofed IP of the attacker and the c
 The objective of this part was to scan the internet with zmap and group IP addresses in the same network.
 \subsection*{ZMAP scan}
 The first step required a 2-4 hour zmap scan in order to obtain a list of IP addresses that responded when probed.
+\newline
 
-The following command was used to perform the zmap scan for three hours:
+\noindent The following command was used to perform the zmap scan for three hours:
 \begin{minted}{bash}
   $ sudo zmap \
       --bandwidth=1M \
@@ -129,16 +131,26 @@ The Python script ran a Bash script (Part 2/scan/whois\_scan.sh) in a 'subproces
 The output of these scripts is contained in the whois\_output.txt file (Part 2/scan/results/whois\_output.txt).
 
 After scanning and collecting all the required data, the next step was to group and count the IP addresses in each network.
-This task was also automated using a python script (Part 2/analyze/analyze\_networks.py). 
+This task was also automated using a python script (Part 2/analyze/analyze\_networks.py).
 The outputs of this script is contained in the directory: Part 2/analyze/results.
+\newline
 
-\textbf{networks.json}: 16063066
+\noindent Description of each output file:
+\begin{itemize}
+\item\textbf{networks.json}: Dictionary of all networks. Key: Network CIDRs; Value: Number of IP addresses in network
 
-\textbf{network\_ip.json}: 11448
+\item\textbf{network\_ip.json}: Dictionary of networks and all IP addresses within each network. Key: Network CIDRs; Value: List of all IP addresses in network
 
-\textbf{multiple\_cidrs.json}: 0.071\%
+\item\textbf{multiple\_cidrs.json}: List of networks with large IP ranges that cause it to have multiple CIDRs.
 
-\textbf{subnets.json}: 0.071\%
+\item\textbf{subnets.json}: List of networks where each CIDR is a subnetword of another CIDR in the string.
+\end{itemize}
+
+\noindent Observations:
+
+Large networks may need multiple CIDRs in order to represent its IP range.
+Some IP addresses returned multiple lines of CIDR fields.
+This meant that the IP addresses were contained in a subnetwork within a larger network.
 
 \section*{Part 3}
 \label{sec:part-3}
