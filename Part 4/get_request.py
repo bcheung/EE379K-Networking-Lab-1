@@ -11,7 +11,7 @@ def main():
 
     # send some data
     # normal GET request
-    query_params = "/service/site/search.aspx?query=hi"
+    # query_params = "/service/site/search.aspx?query=hi"
     # request = "GET {} HTTP/1.1\r\nHost:{}\r\n\r\n".format(query_params, target_host)
     # client.send(request.encode())
 
