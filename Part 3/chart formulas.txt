@@ -1,0 +1,7 @@
+=(ffx_packet_info!$E$2,ffx_packet_info!$E$14,ffx_packet_info!$E$26,ffx_packet_info!$E$38,ffx_packet_info!$E$50,ffx_packet_info!$E$62,ffx_packet_info!$E$74,ffx_packet_info!$E$86,ffx_packet_info!$E$98,ffx_packet_info!$E$110)
+=(tor_packet_info!$E$2,tor_packet_info!$E$14,tor_packet_info!$E$26,tor_packet_info!$E$38,tor_packet_info!$E$50,tor_packet_info!$E$62,tor_packet_info!$E$74,tor_packet_info!$E$86,tor_packet_info!$E$98,tor_packet_info!$E$110)
+=(vpn_packet_info!$E$2,vpn_packet_info!$E$14,vpn_packet_info!$E$26,vpn_packet_info!$E$38,vpn_packet_info!$E$50,vpn_packet_info!$E$62,vpn_packet_info!$E$74,vpn_packet_info!$E$86,vpn_packet_info!$E$98,vpn_packet_info!$E$110)
+
+=(ffx_packet_info!$F$2,ffx_packet_info!$F$14,ffx_packet_info!$F$26,ffx_packet_info!$F$38,ffx_packet_info!$F$50,ffx_packet_info!$F$62,ffx_packet_info!$F$74,ffx_packet_info!$F$86,ffx_packet_info!$F$98,ffx_packet_info!$F$110)
+=(tor_packet_info!$F$2,tor_packet_info!$F$14,tor_packet_info!$F$26,tor_packet_info!$F$38,tor_packet_info!$F$50,tor_packet_info!$F$62,tor_packet_info!$F$74,tor_packet_info!$F$86,tor_packet_info!$F$98,tor_packet_info!$F$110)
+=(vpn_packet_info!$F$2,vpn_packet_info!$F$14,vpn_packet_info!$F$26,vpn_packet_info!$F$38,vpn_packet_info!$F$50,vpn_packet_info!$F$62,vpn_packet_info!$F$74,vpn_packet_info!$F$86,vpn_packet_info!$F$98,vpn_packet_info!$F$110)
