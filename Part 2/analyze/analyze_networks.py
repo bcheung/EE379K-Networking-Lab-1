@@ -7,8 +7,8 @@ import os.path
 
 ip_set = set()
 subnet_set = set()
-multiple_cidrs_arr = []
-network_ip_cnt_dict = {}
+large_nets_arr = []
+network_size_dict = {}
 network_ip_dict = {}
 
 def main():
@@ -86,7 +86,7 @@ def process_cidr_arr(cidr_arr, curr_ip):
     if key in network_ip_dict:
         # network exists, add ip to set
         network_ip_dict[key].append(curr_ip)
-        network_ip_cnt_dict.update({key: network_ip_cnt_dict[key] + 1})
+        network_size_dict.update({key: network_size_dict[key] + 1})
     else:
         # first occurrence of network
         # add entry for each CIDR in cidr_arr
@@ -95,25 +95,25 @@ def process_cidr_arr(cidr_arr, curr_ip):
         network = {key : network_ip_arr}
         network_ip_dict.update(network)
         # add to network list
-        network_ip_cnt_dict.update({key: 1})
+        network_size_dict.update({key: 1})
         if len(cidr_arr) > 1:
-            multiple_cidrs_arr.append(key)
+            large_nets_arr.append(key)
 
 
 def print_results():
     subnets_file = open("results/subnets.json", "a")
-    multiple_cidrs_file = open("results/multiple_cidrs.json", "a")
-    networks_file = open("results/networks.json", "a")
-    network_ip_file = open("results/network_ip.json", "a")
+    large_nets_file = open("results/large_nets.json", "a")
+    network_sizes_file = open("results/network_sizes.json", "a")
+    network_ips_file = open("results/network_ips.json", "a")
 
     subnet_arr = list(subnet_set)
     subnets_file.write(json.dumps(subnet_arr, indent = 4))
 
-    multiple_cidrs_file.write(json.dumps(multiple_cidrs_arr, indent = 4))
+    large_nets_file.write(json.dumps(large_nets_arr, indent = 4))
 
-    networks_file.write(json.dumps(network_ip_cnt_dict, indent = 4))
+    network_sizes_file.write(json.dumps(network_size_dict, indent = 4))
 
-    network_ip_file.write(json.dumps(network_ip_dict, indent = 4))
+    network_ips_file.write(json.dumps(network_ip_dict, indent = 4))
 
 
 if __name__ == "__main__":

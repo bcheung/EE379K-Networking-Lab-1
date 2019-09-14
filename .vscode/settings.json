@@ -2,7 +2,8 @@
     "files.associations": {
         "constants.h": "c",
         "socket.h": "c",
-        "inet.h": "c"
+        "inet.h": "c",
+        "unistd.h": "c"
     },
     "python.pythonPath": "venv/bin/python3",
     "python.linting.pylintEnabled": true,

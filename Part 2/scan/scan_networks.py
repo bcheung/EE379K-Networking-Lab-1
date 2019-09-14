@@ -4,7 +4,7 @@ import subprocess
 
 def main():
     # r - read file
-    with open('zmap_scan_output.txt', 'r', newline=None) as ip_addresses_file:
+    with open('zmap_scan.csv', 'r', newline=None) as ip_addresses_file:
         with open("results/failed_ip.txt", "a") as failed_ip:
             with open("results/successful_ip.txt", "a") as successful_ip:
                 ip = ip_addresses_file.readline()

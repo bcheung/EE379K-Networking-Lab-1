@@ -2,11 +2,12 @@
 from socket import *
 
 def main():
-    target_host = "www.baiwanzhan.com"
-    target_port = 80  # create a socket object
+    # create a socket object
     client = socket(AF_INET, SOCK_STREAM)
 
     # connect the client
+    target_host = "www.baiwanzhan.com"
+    target_port = 80
     client.connect((target_host,target_port))
 
     # send some data
