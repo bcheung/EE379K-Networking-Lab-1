@@ -1,19 +1,11 @@
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{graphicx}
-\usepackage{grffile}
-\usepackage{longtable}
-\usepackage{wrapfig}
-\usepackage{rotating}
-\usepackage[normalem]{ulem}
-\usepackage{amsmath}
-\usepackage{textcomp}
-\usepackage{amssymb}
-\usepackage{capt-of}
-\usepackage{hyperref}
 \usepackage{minted}
-\usepackage[section]{placeins}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{CJKutf8}
+
 \author{Student: Brian Cheung bc32427 \\ Professor: Mohit Tiwari \\ TA: Antonio Espinoza \\ Department of Electrical \& Computer Engineering \\ The University of Texas at Austin}
 \date{\today}
 \title{EE379K Enterprise Network Security Lab 1 Report}
@@ -24,13 +16,14 @@
  pdfsubject={},
  pdfcreator={},
  pdflang={English}}
+
 \begin{document}
 
 \maketitle
 \newpage
 \section*{Part 1 - Server and Client Networking}
 \label{sec:part-1}
-The task was to implement an echo server and client in C given a Python implementation that modeled the desired behavior of the server and client.
+The task was to implement an echo server and client in C ~\cite{echo} given a Python implementation that modeled the desired behavior of the server and client.
 The Python implementation was also used to test the compatibility of the C program by interchanging the server and client with a Python server and C client and vice versa.
 The next task was to perform a Denial of Service (DOS) attack on the C server.
 \subsection*{Step 1 - Echo Server}
@@ -41,23 +34,23 @@ In a terminal window, start at root directory of project and run the following c
   $ make
 \end{minted}
 \subsubsection*{Run server and client}
-Run the following commands to start the server:
+Run the following commands to start server:
 \begin{minted}{bash}
   $ cd Part\ 1
   $ ./server
 \end{minted}
-Open a new terminal window and run the following commands to start the client:
+Open a new terminal window and run the following commands to start client:
 \begin{minted}{bash}
   $ cd Part\ 1
   $ ./client
 \end{minted}
 \subsection*{Step 2 - DOS Attack}
-The DOS attack was performed using a program called \textbf{\emph{hping3}}.
+The DOS attack ~\cite{dos} was performed using a program called \verb|hping3| ~\cite{hping3}.
 \noindent The following command was used to perform the DOS attack:
 \begin{minted}{bash}
   $ sudo hping3 -S -w 64 -p 12000 --flood --rand-source 127.0.0.2
 \end{minted}
-\textbf{\emph{hping3}} command flags and options:
+\verb|hping3| command flags and options:
 
 \textbf{-S}: flood with SYN packets
 
@@ -83,14 +76,14 @@ However, the server sends the packets to the spoofed IP of the attacker instead,
 which prevents the three-way handshake from being completed.
 As a result, the client's request times out (shown in Figure \ref{fig:filtered-dos}).
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=.9\linewidth]{./client-attempt-flood.png}
 \caption{\label{fig:client-attempt-flood}
 Client with IP address of 127.0.0.1 attempts to connect to the server during a DOS attack.}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=.9\linewidth]{./filtered-dos.png}
 \caption{\label{fig:filtered-dos}
@@ -100,12 +93,12 @@ The server sends SYN and ACK packets to the spoofed IP of the attacker and the c
 \newpage
 \section*{Part 2 - Scan the Internet}
 \label{sec:part-2}
-The objective of this part was to scan the internet with zmap and group IP addresses in the same network.
-\subsection*{ZMAP scan}
-The first step required a 2-4 hour zmap scan in order to obtain a list of IP addresses that responded when probed.
+The objective of this part was to scan the internet with \verb|zmap|~\cite{zmap} and group IP addresses in the same network.
+\subsection*{ZMAP Scan}
+The first step required a 2-4 hour \verb|zmap| scan in order to obtain a list of IP addresses that responded when probed.
 \newline
 
-\noindent The following command was used to perform the zmap scan for three hours:
+\noindent The following command was used to perform the \verb|zmap| scan for three hours:
 \begin{minted}{bash}
   $ sudo zmap \
       --bandwidth=1M \
@@ -138,13 +131,13 @@ The outputs of this script is contained in the directory: Part 2/analyze/results
 
 \noindent Description of each output file:
 \begin{itemize}
-\item\textbf{networks.json}: Dictionary of all networks. Key: Network CIDRs; Value: Number of IP addresses in network
+\item\textbf{network\_sizes.json}: Dictionary of all networks. Key: Network CIDRs; Value: Number of IP addresses in network
 
-\item\textbf{network\_ip.json}: Dictionary of networks and all IP addresses within each network. Key: Network CIDRs; Value: List of all IP addresses in network
+\item\textbf{network\_ips.json}: Dictionary of networks and all IP addresses within each network. Key: Network CIDRs; Value: List of all IP addresses in network
 
-\item\textbf{multiple\_cidrs.json}: List of networks with large IP ranges that cause it to have multiple CIDRs.
+\item\textbf{large\_nets.json}: List of networks with large IP ranges that cause it to have multiple CIDRs.
 
-\item\textbf{subnets.json}: List of networks where each CIDR is a subnetword of another CIDR in the string.
+\item\textbf{subnets.json}: List of networks where each CIDR is a subnetwork of another CIDR in the string.
 \end{itemize}
 
 \noindent Observations:
@@ -153,26 +146,21 @@ The outputs of this script is contained in the directory: Part 2/analyze/results
   \item Some IP addresses returned multiple lines of CIDR fields. This meant that the IP addresses were contained in a subnetwork within a larger network.
 \end{itemize}
 
+\subsection*{Digging Deeper}
+The IP address of \verb|23.209.193.210| is owned by Akamai Technologies, Inc. (AKAMAI) which is located in Cambridge, Massachusetts. 
+The IP address belongs to a network with a CIDR of \verb|23.192.0.0/11|, which means that the network has 2,097,152
+IP addresses allocated to it. However only 218 machines responded when running the \verb|zmap| on port 80.
+Using \verb|traceroute| on \verb|23.209.193.210| showed that it took at least 30 hops to reach the IP.
+Running \verb|zmap| on the CIDR of \verb|23.192.0.0/11| on port 443 gave 99,117 responses with a hitrate of 6.77\% in
+1000 seconds. On the other hand, running \verb|zmap| on the network on port 22 gave only 59 responses with a hitrate
+of 0.004\% in just 1000 seconds.
+
 \newpage
 \section*{Part 3 - Connection Modes}
 \label{sec:part-3}
 For this part, \verb|tcpdump| was used to record the network traffic when accessing 10 websites each over a 10 second time period for each connection mode (Firefox, TOR, VPN).
 Then each of the resulting \verb|.pcap| file was analyzed for the average number of packets (shown in Figure \ref{fig:avg-number-packets})
 and average packet size (shown in Figure \ref{fig:avg-packet-size}).
-
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=.9\linewidth]{./avg-number-packets.png}
-  \caption{\label{fig:avg-number-packets}
-  The chart depicts the average number of packets over 10 seconds for each website using each of the 3 connection modes.}
-\end{figure}
-
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=.9\linewidth]{./avg-packet-size.png}
-  \caption{\label{fig:avg-packet-size}
-  The chart depicts the average packet size over 10 seconds for each website using each of the 3 connection modes.}
-\end{figure}
 
 \noindent Observations:
 \begin{itemize}
@@ -181,7 +169,7 @@ and average packet size (shown in Figure \ref{fig:avg-packet-size}).
     As the average number of packets decreased, the average size of the packets increased.
 \end{itemize}
 
-Questions:
+\noindent Questions:
 \begin{enumerate}
   \item For each connection type, what is visible to a passive device on the network?
 
@@ -201,17 +189,51 @@ Questions:
   size, which could be easy to identify if one were looking for this characteristic.
 \end{enumerate}
 
-\newpage
-\section*{Part 4}
-\label{sec:part-4}
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=.9\linewidth]{./avg-number-packets.png}
+  \caption{\label{fig:avg-number-packets}
+  The chart depicts the average number of packets over 10 seconds for each website using each of the 3 connection modes.}
+\end{figure}
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=.9\linewidth]{./avg-packet-size.png}
+  \caption{\label{fig:avg-packet-size}
+  The chart depicts the average packet size over 10 seconds for each website using each of the 3 connection modes.}
+\end{figure}
 
+\newpage
+\section*{Part 4 - Bypassing Censorship}
+\label{sec:part-4}
+The objective of this part was to explore one of the methods used to bypass censorship.
+The idea is to make it hard for the server to identify an infringing request by
+splitting up a request into packets. This prevents the server from successfully identifying an
+infringing request if it is simply inspecting each packet individually.
+However, this method would not work if the server correctly reassembles inspects the stream.
+The Python script (Part 4/get\_request.py) shows how a search request of '\begin{CJK*}{UTF8}{gbsn}法轮\end{CJK*}' to \verb|http.baiwanzhan.com| could be split into two packets.
+
+In Figure \ref{fig:full-split-get-request} below, the first line highlighted in blue shows the full GET request made to the server.
+The packet detail window shows that the GET request was actually reassembled from two packets.
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=.9\linewidth]{./full-split-get-request.png}
+  \caption{\label{fig:full-split-get-request}
+  The screenshot of Wireshark shows the GET request split into two packets.}
+\end{figure}
+
+\noindent Observations:
+\begin{itemize}
+  \item Packets sent to the server have a Time to Live (TTL) generally have a value of 64 seconds.
+  \item Packets sent from the server to the client have a TTL of 45 seconds.
+  "A short TTL helps update the system more quickly, making the load balancer more effective."~\cite{ttl}
+\end{itemize}
 
 \section*{Conclusion}
 \label{sec:conclusion}
-Please provide feedback so we can improve the labs for the course. How many
-hours did the lab take you? Was this lab boring? Did you learn anything? Is
-there anything you would change? Feel free to put anything here, but leaving it
-blank will result in the loss of points.
+The lab took about 40 hours which was a bit longer than expected.
+It was pretty interesting learning about socket connections in different languages and how GET requests are built using socket connections.
+I think some parts of the lab were a little unclear and needed further clarification.
+Overall, this lab served its purpose in providing a more hands-on experience that helped improve my understanding of networking.
 
 \nocite{*}
 \bibliography{bibliography}
